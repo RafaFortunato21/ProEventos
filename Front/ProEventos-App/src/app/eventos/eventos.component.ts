@@ -8,7 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class EventosComponent implements OnInit {
 
-  public eventos: any = []
+  public eventos: any = [];
+  largunraImagem: number = 150;
+  margemImagem: number = 2;
+  mostrarImagem: boolean = true;
+  filtroLista:string = '';
 
   constructor(private http: HttpClient) { }
 
@@ -22,5 +26,12 @@ export class EventosComponent implements OnInit {
       error => console.log(error)
     );
   }
+
+  exibirImagem() : void {
+    this.mostrarImagem = !this.mostrarImagem;
+
+  }
+
+
 
 }
