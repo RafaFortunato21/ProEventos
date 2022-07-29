@@ -2,11 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using ProEventos.API.Data;
+using ProEventos.Persistence;
+using ProEventos.Persistence.Contextos;
 
 namespace ProEventos.API.Migrations
 {
-    [DbContext(typeof(DataContext))]
+    [DbContext(typeof(ProEventosContext))]
     partial class DataContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
