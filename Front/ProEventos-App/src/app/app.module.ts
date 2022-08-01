@@ -2,10 +2,6 @@ import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { EventosComponent } from './componentes/eventos/eventos.component';
-import { PalestrantesComponent } from './componentes/palestrantes/palestrantes.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavComponent } from './nav/nav.component';
 
@@ -17,16 +13,27 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { EventosComponent } from './componentes/eventos/eventos.component';
+import { PalestrantesComponent } from './componentes/palestrantes/palestrantes.component';
+import { DashboardComponent } from './componentes/dashboard/dashboard.component';
+import { ContatosComponent } from './componentes/contatos/contatos.component';
+import { PerfilComponent } from './componentes/perfil/perfil.component';
+import { TituloComponent } from './shared/titulo/titulo.component';
 
 import { EventoService } from './services/evento.service';
+
 import { DateTimeFormatPipe } from './helpers/DateTimeFormat.pipe';
-import { TituloComponent } from './shared/titulo/titulo.component';
 @NgModule({
   declarations: [
     AppComponent,
     EventosComponent,
     TituloComponent,
     PalestrantesComponent,
+    ContatosComponent,
+    DashboardComponent,
+    PerfilComponent,
     NavComponent,
     DateTimeFormatPipe
 
