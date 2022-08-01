@@ -4,8 +4,8 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { EventosComponent } from './eventos/eventos.component';
-import { PalestrantesComponent } from './palestrantes/palestrantes.component';
+import { EventosComponent } from './componentes/eventos/eventos.component';
+import { PalestrantesComponent } from './componentes/palestrantes/palestrantes.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavComponent } from './nav/nav.component';
 
@@ -20,10 +20,12 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 
 import { EventoService } from './services/evento.service';
 import { DateTimeFormatPipe } from './helpers/DateTimeFormat.pipe';
+import { TituloComponent } from './shared/titulo/titulo.component';
 @NgModule({
   declarations: [
     AppComponent,
     EventosComponent,
+    TituloComponent,
     PalestrantesComponent,
     NavComponent,
     DateTimeFormatPipe
