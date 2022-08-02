@@ -1,7 +1,10 @@
 
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" routerLink="dashboard">ProEventos</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm" *ngIf="showMenu()">
+  <div class="container">
+  <a class="navbar-brand" routerLink="dashboard">
+    <i class="fa fa-users mb-2"></i>
+  </a>
   <button class="navbar-toggler" (click)="isCollapsed = !isCollapsed" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" >
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -24,15 +27,16 @@
           Rafael
         </a>
         <div *dropdownMenu class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-          <a class="dropdown-item" routerLink="perfil">
+          <a class="dropdown-item" routerLink="user/perfil">
             Perfil
           </a>
           <div role="separator" class="divider"></div>
-          <a class="dropdown-item" routerLink="Sair">
+          <a class="dropdown-item" routerLink="user/login">
             Sair
           </a>
         </div>
       </li>
     </ul>
   </div>
+</div>
 </nav>
