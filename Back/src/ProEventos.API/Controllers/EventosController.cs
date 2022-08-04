@@ -27,24 +27,8 @@ namespace ProEventos.API.Controllers
             try
             {
                  var eventos = await _eventoService.GetAllEventosAsync(true);
-                 if (eventos == null) return NotFound("Nenhum evento encontrado.");
-
-                //  var eventosRetorno = new List<EventoDto>();
-
-                // foreach (var evento in eventos)
-                // {
-                //     eventosRetorno.Add(new EventoDto(){
-                //         Id = evento.Id,
-                //         Local = evento.Local,
-                //         DataEvento = evento.DataEvento.ToString(),
-                //         Tema = evento.Tema,
-                //         QtdPessoas = evento.QtdPessoas,
-                //         Lote = evento.Lote,
-                //         ImageURL = evento.ImageURL,
-                //         Telefone = evento.Telefone,
-                //         Email = evento.Email
-                //     });
-                // }
+                 if (eventos == null) return NoContent();
+                
                  return Ok(eventos);
                  
             }
@@ -62,7 +46,7 @@ namespace ProEventos.API.Controllers
             {
                  var evento = await _eventoService.GetAllEventoByIdAsync(id, true);
 
-                 if (evento == null) return NotFound("Evento não encontrado.");
+                 if (evento == null) return NoContent();;
 
                  return Ok(evento);
                  
@@ -81,7 +65,7 @@ namespace ProEventos.API.Controllers
             {
                  var evento = await _eventoService.GetAllEventosByTemaAsync(tema, true);
 
-                 if (evento == null) return NotFound("Eventos por tema não encontrados.");
+                 if (evento == null) return NoContent();;
 
                  return Ok(evento);
                  
@@ -101,7 +85,7 @@ namespace ProEventos.API.Controllers
             {
                  var evento = await _eventoService.addEventos(model);
 
-                 if (evento == null) return BadRequest("Erro ao tentar adicionar evento.");
+                 if (evento == null) return NoContent();;;
                  
 
                  return Ok(evento);
@@ -121,7 +105,7 @@ namespace ProEventos.API.Controllers
             {
                  var evento = await _eventoService.UpdateEventos(id, model);
 
-                 if (evento == null) return BadRequest("Erro ao tentar atualizar um evento.");
+                 if (evento == null) return NoContent();;;
                  
 
                  return Ok(evento);
@@ -139,9 +123,14 @@ namespace ProEventos.API.Controllers
         {
             try
             {
+                var evento = await _eventoService.GetAllEventoByIdAsync(id,true);
+
+                if (evento == null) return NoContent();
+                
+
                 return await _eventoService.DeleteEvento(id) ?
                     Ok("Deletado") :
-                    BadRequest("Erro ao excluir um evento.");
+                    throw new Exception("Ocorreu um erro não especifico ao deletar o Evento.");
                  
             }
             catch (Exception ex)
