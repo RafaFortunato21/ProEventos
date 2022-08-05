@@ -20,6 +20,7 @@ export class EventoListaComponent implements OnInit {
   public margemImagem = 2;
   public mostrarImagem = true;
   modalRef?: BsModalRef;
+  public eventoId = 0;
 
 
 
@@ -52,13 +53,13 @@ export class EventoListaComponent implements OnInit {
 
 
   public ngOnInit(): void {
-    this.getEventos();
+    this.carregarEventos();
     this.spinner.show();
 
 
   }
 
-  public getEventos(): void {
+  public carregarEventos(): void {
     this.eventoService.getEvento().subscribe({
       next: (_eventos: Evento[]) =>  {
         this.eventos = _eventos;
@@ -78,7 +79,10 @@ export class EventoListaComponent implements OnInit {
   }
 
 
-  openModal(template: TemplateRef<any>) : void {
+
+  openModal(event: any, template: TemplateRef<any>, eventoId:number) : void {
+    event.stopPropagation();
+    this.eventoId = eventoId;
     this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
   }
 
@@ -88,7 +92,23 @@ export class EventoListaComponent implements OnInit {
 
   confirm(): void {
     this.modalRef?.hide();
-    this.showSuccess();
+    this.spinner.show();
+
+    this.eventoService.deleteEvento(this.eventoId).subscribe(
+      (result: any) => {
+        if (result.message === 'Deletado') {
+          this.showSuccess();
+          this.carregarEventos();
+        }
+      },
+      (error:any) => {
+        console.error(error);
+        this.toastr.error(`Falha ao excluir o Evento ${this.eventoId} `, 'Erro!');
+        this.spinner.hide();
+      },
+
+    ).add(() => this.spinner.hide(),);
+
   }
 
   decline(): void {
