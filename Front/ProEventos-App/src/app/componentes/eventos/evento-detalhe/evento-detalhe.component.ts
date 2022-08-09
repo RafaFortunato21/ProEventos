@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 
 
@@ -115,9 +115,13 @@ export class EventoDetalheComponent implements OnInit {
       imageURL:   ['', Validators.required],
       telefone:   ['', Validators.required],
       email:      ['',[Validators.required, Validators.email]
+      //lotes: this.fb.array([])
+
       ]
-    })
+    });
   }
+
+
 
   public resetForm(): void {
     this.form.reset();
