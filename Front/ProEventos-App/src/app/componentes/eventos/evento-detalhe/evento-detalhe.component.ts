@@ -1,6 +1,6 @@
  import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 
 import { Evento } from '@app/models/Evento';
@@ -24,6 +24,12 @@ export class EventoDetalheComponent implements OnInit {
   estadoSalvar = 'post'
   form: FormGroup = new FormGroup({}) ;
 
+
+  get modoEditar(): boolean {
+    return this.estadoSalvar == 'put';
+  }
+
+
   get lotes(): FormArray{
     return this.form.get('lotes') as FormArray;
   }
@@ -45,16 +51,17 @@ export class EventoDetalheComponent implements OnInit {
   }
 
   constructor(private fb:FormBuilder, private localeService: BsLocaleService,
-              private router: ActivatedRoute,
+              private activatedRouter: ActivatedRoute,
               private eventoService:EventoService,
               private spinner:NgxSpinnerService,
-              private toast:ToastrService) {
+              private toast:ToastrService,
+              private router: Router) {
     this.localeService.use('pt-br');
   }
 
 
   public carregarEvento(): void {
-    const eventoIdParam = this.router.snapshot.paramMap.get('id');
+    const eventoIdParam = this.activatedRouter.snapshot.paramMap.get('id');
 
     if (eventoIdParam != null ) {
       this.spinner.show();
@@ -85,18 +92,17 @@ export class EventoDetalheComponent implements OnInit {
                     ? {...this.form.value}
                     : {id: this.evento.id,...this.form.value};
 
-      if (this.estadoSalvar === 'post' || this.estadoSalvar === 'put' ) {
-        this.eventoService[this.estadoSalvar](this.evento).subscribe(
-          (result) => this.toast.success('Evento salvo com sucesso.', 'Sucesso!'),
-          (error) => {
-            console.error(error);
-            this.spinner.hide();
-            this.toast.error('Falha ao cadastrar o Evento', 'Erro!');
-          },
-          () => this.spinner.hide()
-        );
-      }
-
+      this.eventoService[this.estadoSalvar](this.evento).subscribe(
+        () => {
+          this.toast.success('Evento salvo com sucesso.', 'Sucesso!');
+        },
+        (error: any) => {
+          console.error(error);
+          this.spinner.hide();
+          this.toast.error('Falha ao cadastrar o Evento', 'Erro!');
+        },
+        () => this.spinner.hide()
+      );
 
 
     }
@@ -105,7 +111,6 @@ export class EventoDetalheComponent implements OnInit {
   ngOnInit(): void {
     this.carregarEvento();
     this.validation();
-    console.log(this.evento.dataEvento);
   }
 
 
