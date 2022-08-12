@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProEventos.Application.Contratos;
@@ -14,10 +16,12 @@ namespace ProEventos.API.Controllers
         
         
         private readonly IEventoService _eventoService;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public EventosController(IEventoService eventoService)
+        public EventosController(IEventoService eventoService, IWebHostEnvironment hostEnvironment)
         {
             _eventoService = eventoService;
+            _hostEnvironment = hostEnvironment;
         }
 
 
@@ -77,6 +81,33 @@ namespace ProEventos.API.Controllers
             }
         }
 
+        [HttpPost("upload-image/{eventoid}")]
+        public async Task<IActionResult> UploadImage(int eventoId)
+        {
+            try
+            {
+                
+                var evento = await _eventoService.GetAllEventoByIdAsync(eventoId, true);
+                 if (evento == null) return NoContent();;;
+                 
+                var file = Request.Form.Files[0];
+
+                if (file.Length > 0)
+                {
+                    DeleteImage(evento.ImageURL);
+                    //evento.ImageURL = SaveImage(file);
+                }
+                var EventoRetorno = await _eventoService.UpdateEventos(eventoId, evento);
+
+                 return Ok(EventoRetorno);
+                 
+            }
+            catch (Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Erro ao tentar gravar Evento, erro: {ex.Message} ");
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> Post(EventoDto model)
@@ -137,6 +168,17 @@ namespace ProEventos.API.Controllers
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError,
                     $"Erro ao tentar deletar um Evento, erro: {ex.Message} ");
+            }
+        }
+
+        [NonAction]
+        public void DeleteImage(string imageName) {
+            
+            var imagePath =  Path.Combine(_hostEnvironment.ContentRootPath, @"Resources/images", imageName);
+
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
             }
         }
     }
