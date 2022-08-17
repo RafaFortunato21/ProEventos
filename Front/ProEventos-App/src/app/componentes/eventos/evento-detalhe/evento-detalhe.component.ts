@@ -12,6 +12,7 @@ import { Lote } from '@app/models/Lote';
 import { EventoService } from '@app/services/evento.service';
 import { LoteService } from '@app/services/lote.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-evento-detalhe',
@@ -26,6 +27,8 @@ export class EventoDetalheComponent implements OnInit {
   form: FormGroup = new FormGroup({}) ;
   modalRef: BsModalRef;
   loteAtual = {id: 0, nome: '', indice: 0};
+  imageURl = 'assets/img/upload.png';
+  file: File;
 
 
   get modoEditar(): boolean {
@@ -77,6 +80,9 @@ export class EventoDetalheComponent implements OnInit {
         (evento: Evento) => {
           this.evento = {...evento};
           this.form.patchValue(this.evento);
+          if (this.evento.imageURL !== '') {
+              this.imageURl = environment.apiURL + 'resources/images/' + this.evento.imageURL
+          }
           this.carregarLotes();
         },
         (error:any) => {
@@ -165,7 +171,7 @@ export class EventoDetalheComponent implements OnInit {
       local:      ['', Validators.required],
       dataEvento: ['', Validators.required],
       qtdPessoas: ['',[Validators.required, Validators.max(120000)]],
-      imageURL:   ['', Validators.required],
+      imageURL:   [''],
       telefone:   ['', Validators.required],
       email:      ['',[Validators.required, Validators.email]],
       lotes: this.fb.array([])
@@ -245,7 +251,34 @@ export class EventoDetalheComponent implements OnInit {
   }
 
 
+  onFileChange(ev: any): void {
+    const reader = new FileReader();
 
+    reader.onload = (event: any) => this.imageURl = event.target.result;
+
+    this.file = ev.target.files;
+
+    reader.readAsDataURL(this.file[0]);
+
+    this.uploadImage();
+
+  }
+
+
+  uploadImage(): void {
+    this.spinner.show();
+    this.eventoService.postUpload(this.eventoId, this.file).subscribe(
+      () => {
+        this.carregarEvento();
+        this.toast.success('Imagem atualizada com sucesso','Sucesso');
+      },
+      (error:any) => {
+        this.toast.error('Erro ao fazer upload de imagem','Erro!');
+        console.error(error);
+      }
+    ).add(() => this.spinner.hide() )
+
+  }
 
 
 
