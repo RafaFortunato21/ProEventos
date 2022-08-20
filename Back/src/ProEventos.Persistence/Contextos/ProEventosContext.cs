@@ -26,8 +26,28 @@ namespace ProEventos.Persistence.Contextos
 
         public DbSet<RedeSocial> RedesSociais { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modeloBuilder){
+        protected override void OnModelCreating(ModelBuilder modeloBuilder)
+        {
+            base.OnModelCreating(modeloBuilder);
             
+            modeloBuilder.Entity<UserRole>(userRole =>
+                {
+                    userRole.HasKey(ur => new {ur.UserId, ur.RoleId});
+
+
+                    userRole.HasOne(ur => ur.Role)
+                        .WithMany(r => r.UserRoles)
+                        .HasForeignKey(ur => ur.RoleId)
+                        .IsRequired();
+
+                    userRole.HasOne(ur => ur.User)
+                        .WithMany(r => r.UserRoles)
+                        .HasForeignKey(ur => ur.UserId)
+                        .IsRequired();
+                }
+            );
+
+
             modeloBuilder.Entity<PalestranteEvento> ()
                 .HasKey(PE => new {PE.EventoId, PE.PalestranteId}) ;
 
