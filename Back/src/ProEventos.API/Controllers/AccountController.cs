@@ -53,7 +53,6 @@ namespace ProEventos.API.Controllers
             try
             {
                 if (await _accountService.UserExists(userDto.UserName) ) return BadRequest("Usuário já existe");
-                
                 var user = await _accountService.CreateAccountAsync(userDto) ;
                 
                 if (user != null )
@@ -100,6 +99,29 @@ namespace ProEventos.API.Controllers
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError,
                     $"Erro ao tentar recuperar usuário. Erro: {ex.Message} ");
+            }
+
+        }
+
+
+        [HttpPut("UpdateUser")]
+        
+        public async Task<IActionResult> UpdateUser(UserUpdateDto userUpdateDto){
+            try
+            {
+                var user = await _accountService.GetUserByUserNameAsync(User.GetUserName());
+                if (user == null) return Unauthorized("Usuário não identificado.");
+                
+                var userReturn = await _accountService.UpdateAccount(userUpdateDto);
+                if (userReturn == null ) return NoContent();
+                    
+                return Ok(userReturn);
+
+            }
+            catch (System.Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError,
+                    $"Erro ao tentar atualizar usuário. Erro: {ex.Message} ");
             }
 
         }
