@@ -27,8 +27,8 @@ export class AccountService {
           this.setCurrentUser(user);
         }
       })
-      );
-    }
+    );
+  }
 
   public logout(): void {
     localStorage.removeItem('user');

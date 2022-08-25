@@ -40,8 +40,8 @@ namespace ProEventos.API.Controllers
             try
             {
                  var eventos = await _eventoService.GetAllEventosAsync(User.GetUserId(), true);
-                 if (eventos == null) return NoContent();
                 
+                 if (eventos == null) return NoContent();
                  return Ok(eventos);
                  
             }
