@@ -9,7 +9,7 @@
 
 	<div class="col-md-6">
 
-		<form class="p-1" [formGroup]="form">
+		<form class="p-1" [formGroup]="form" (ngSubmit)="register()">
       <div class="pb-2 d-block d-md-none">
         <h3 class="border-bottom">Cadastro de Usuário</h3>
       </div>
@@ -48,18 +48,18 @@
         <div class="form-group col-sm-6">
           <label for="">Senha:</label>
           <input class="form-control" type="password"
-          formControlName="senha" [ngClass]="{'is-invalid': f.senha?.errors && f.senha?.touched}"
-          placeholder="Digite uma Senha" />
-          <div class="invalid-feedback" *ngIf="f.senha?.errors?.required">senha é obrigatório.</div>
-          <div class="invalid-feedback" *ngIf="f.senha?.errors?.minlength">no minimo 6 caracter.</div>
+          formControlName="password" [ngClass]="{'is-invalid': f.password?.errors && f.password?.touched}"
+          placeholder="Digite uma senha" />
+          <div class="invalid-feedback" *ngIf="f.password?.errors?.required">Senha é obrigatório.</div>
+          <div class="invalid-feedback" *ngIf="f.password?.errors?.minlength">no minimo 6 caracter.</div>
         </div>
         <div class="form-group col-sm-6">
           <label for="">Confirmar Senha:</label>
           <input class="form-control" type="password"
-          formControlName="confirmSenha" [ngClass]="{'is-invalid': f.confirmSenha?.errors && f.confirmSenha?.touched}"
-          placeholder="Confirme a confirmSenha" />
-          <div class="invalid-feedback" *ngIf="f.confirmSenha?.errors?.required">confirmação de senha é obrigatório.</div>
-          <div class="invalid-feedback" *ngIf="f.confirmSenha?.errors?.mustMatch">as senhas precisam ser iguais</div>
+          formControlName="confirmPassword" [ngClass]="{'is-invalid': f.confirmPassword?.errors && f.confirmPassword?.touched}"
+          placeholder="Confirme a Senha" />
+          <div class="invalid-feedback" *ngIf="f.confirmPassword?.errors?.required">confirmação de senha é obrigatório.</div>
+          <div class="invalid-feedback" *ngIf="f.confirmPassword?.errors?.mustMatch">as senhas precisam ser iguais</div>
         </div>
       </div>
       <div class="form-row p-1 mb-3">
@@ -70,7 +70,7 @@
       </div>
       <div class="form-row">
         <div class="form-group col-12">
-          <button class="btn btn-lg btn-success btn-block px-5">
+          <button [disabled]="!form.valid" class="btn btn-lg btn-success btn-block px-5" type="submit">
             Registar
           </button>
         </div>

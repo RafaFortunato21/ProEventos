@@ -26,17 +26,16 @@ export class LoginComponent implements OnInit {
 
   public login(): void {
     this.accountService.login(this.model).subscribe(
-      () => {this.router.navigateByUrl('/dashboard');
+      () => {
+        this.router.navigateByUrl('/dashboard');
+      },
       (error: any) => {
-        console.log("ERRROOO");
-        // if (error.status === 401)
-        //   this.toaster.error('Usuario ou senha inválido', 'Erro!');
-        // else
-        //   console.log(error);
+        if (error.status == 401)
+          this.toaster.error('usuário ou senha inválido');
+        else console.error(error);
       }
+    );
 
-    }
-    )
   }
 
 }
