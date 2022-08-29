@@ -1,6 +1,6 @@
 import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NavComponent } from './nav/nav.component';
@@ -27,14 +27,18 @@ import { PerfilComponent } from './componentes/user/perfil/perfil.component';
 import { TituloComponent } from './shared/titulo/titulo.component';
 
 import { EventoService } from './services/evento.service';
+import { LoteService } from './services/lote.service';
+import { AccountService } from './services/account.service';
+
+import { JwtInterceptor } from './interceptors/jwt.interceptor';
 
 import { DateTimeFormatPipe } from './helpers/DateTimeFormat.pipe';
 import { EventoDetalheComponent } from './componentes/eventos/evento-detalhe/evento-detalhe.component';
 import { EventoListaComponent } from './componentes/eventos/evento-lista/evento-lista.component';
 import { UserComponent } from './componentes/user/user.component';
+import { HomeComponent } from './componentes/home/home.component';
 import { LoginComponent } from './componentes/user/login/login.component';
 import { RegistrationComponent } from './componentes/user/registration/registration.component';
-import { LoteService } from './services/lote.service';
 
 defineLocale('pt-br', ptBrLocale);
 
@@ -52,6 +56,7 @@ defineLocale('pt-br', ptBrLocale);
     EventoDetalheComponent,
     EventoListaComponent,
     UserComponent,
+    HomeComponent,
     LoginComponent,
     RegistrationComponent
 
@@ -81,8 +86,11 @@ defineLocale('pt-br', ptBrLocale);
   ],
   providers: [
     EventoService,
-    LoteService],
-  bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    LoteService,
+    AccountService,
+    {provide:HTTP_INTERCEPTORS, useClass:JwtInterceptor, multi: true }
+
+  ],
+  bootstrap: [AppComponent]
 })
 export class AppModule { }
