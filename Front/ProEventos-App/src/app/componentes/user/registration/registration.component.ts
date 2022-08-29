@@ -32,31 +32,32 @@ export class RegistrationComponent implements OnInit {
     this.validation();
   }
 
-  public validation(): void{
+  private validation(): void {
 
     const formOptions: AbstractControlOptions = {
-      validators: ValidatorField.MustMatch('password', 'confirmPassword')
+      validators: ValidatorField.MustMatch('password', 'confirmePassword')
     };
 
     this.form = this.fb.group({
-      primeiroNome:   ['', Validators.required],
-      ultimoNome:     ['', Validators.required],
-      email:          ['',[Validators.required, Validators.email]],
-      usuario:     ['', Validators.required],
-      password:          ['',
+      primeiroNome: ['', Validators.required],
+      ultimoNome: ['', Validators.required],
+      email: ['',
+        [Validators.required, Validators.email]
+      ],
+      userName: ['', Validators.required],
+      password: ['',
         [Validators.required, Validators.minLength(4)]
       ],
-      confirmPassword:   ['', Validators.required]
-
-    }, formOptions)
+      confirmePassword: ['', Validators.required],
+    }, formOptions);
   }
 
+
   register(): void {
-    this.user = { ...this.form.value};
+    this.user = { ...this.form.value };
     this.accountService.register(this.user).subscribe(
       () => this.router.navigateByUrl('/dashboard'),
       (error: any) => this.toaster.error(error.error)
-
     )
   }
 

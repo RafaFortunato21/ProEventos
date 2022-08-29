@@ -47,16 +47,16 @@ namespace ProEventos.Application
             }
         }
 
-        public async Task<UserDto> CreateAccountAsync(UserDto userDto)
+        public async Task<UserUpdateDto> CreateAccountAsync(UserUpdateDto userUpdateDto)
         {
             try
             {
-                var user = _mapper.Map<User>(userDto);
-                var result = await _userManager.CreateAsync(user, userDto.Password);
+                var user = _mapper.Map<User>(userUpdateDto);
+                var result = await _userManager.CreateAsync(user, userUpdateDto.Password);
                 
                 if (result.Succeeded  )
                 {
-                    var userToReturn = _mapper.Map<UserDto>(user);
+                    var userToReturn = _mapper.Map<UserUpdateDto>(user);
                     return userToReturn;
                 }
 

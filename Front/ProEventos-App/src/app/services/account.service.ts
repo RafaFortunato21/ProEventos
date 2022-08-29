@@ -16,10 +16,10 @@ export class AccountService {
 
 
   baseUrl = environment.apiURL + 'api/account/'
-  constructor(private Http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
   public login(model: any): Observable<void>{
-    return this.Http.post<User>(this.baseUrl + 'login', model).pipe(
+    return this.http.post<User>(this.baseUrl + 'login', model).pipe(
       take(1),
       map((response: User) => {
         const user = response;
@@ -42,13 +42,13 @@ export class AccountService {
 
   }
 
-  public register(model: any): Observable<void>{
-    return this.Http.post<User>(this.baseUrl + 'register', model).pipe(
+  public register(model: any): Observable<void> {
+    return this.http.post<User>(this.baseUrl + 'register', model).pipe(
       take(1),
       map((response: User) => {
         const user = response;
         if (user) {
-          this.setCurrentUser(user);
+          this.setCurrentUser(user)
         }
       })
     );
