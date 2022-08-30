@@ -6,6 +6,9 @@ import { ToastrService } from 'ngx-toastr';
 import { Evento } from '@app/models/Evento';
 import { EventoService } from '@app/services/evento.service';
 import { environment } from '@environments/environment';
+import { PaginatedResult, Pagination } from '@app/models/Pagination';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-evento-lista',
@@ -16,12 +19,12 @@ export class EventoListaComponent implements OnInit {
 
 
   public eventos: Evento[] = [];
-  public eventosFiltrados: Evento[] = [];
   public largunraImagem = 150;
   public margemImagem = 2;
   public mostrarImagem = true;
   modalRef?: BsModalRef;
   public eventoId = 0;
+  public pagination = {} as Pagination
 
 
 
@@ -31,102 +34,116 @@ export class EventoListaComponent implements OnInit {
     private toastr: ToastrService,
     private spinner: NgxSpinnerService,
     private router: Router
-  ) { }
+    ) { }
 
-  private _filtroListado = '';
+    termoBucaChanged: Subject<string> = new Subject<string>();
 
-  public get filtroLista(): string {
-    return this._filtroListado;
-  }
+    public filtrarEventos(event: any): void {
 
-  public set filtroLista(value: string){
-    this._filtroListado = value;
-    this.eventosFiltrados = this.filtroLista ? this.filtrarEventos(this._filtroListado) : this.eventos
-  }
+      if (this.termoBucaChanged.observers.length == 0) {
+        this.termoBucaChanged.pipe(debounceTime(1000)).subscribe(
+          filrarPor => {
+            this.spinner.show();
+            this.eventoService
+            .getEvento(
+              this.pagination.currentPage,
+              this.pagination.itemsPerPage,
+              filrarPor
+              ).subscribe(
+                (response: PaginatedResult<Evento[]>) =>  {
+                  this.eventos = response.result;
+                },
+                (error: any) => {
+                  this.spinner.hide();
+                  this.toastr.error('Erro ao carregar os eventos!', 'Erro!')
+                }
+                ).add(() => this.spinner.hide());
+              }
+          )
+      }
+      this.termoBucaChanged.next(event.value);
 
-  public filtrarEventos(filtrarPor: string): Evento[] {
-      filtrarPor = filtrarPor.toLocaleLowerCase();
-      return this.eventos.filter(
-        (evento : Evento) => evento.tema.toLocaleLowerCase().indexOf(filtrarPor) !== -1 ||
-        evento.local.toLocaleLowerCase().indexOf(filtrarPor) !== -1
-      )
-  }
-
-
-  public ngOnInit(): void {
-    this.carregarEventos();
-    this.spinner.show();
-
-
-  }
-
-  public carregarEventos(): void {
-    this.eventoService.getEvento().subscribe({
-      next: (_eventos: Evento[]) =>  {
-        this.eventos = _eventos;
-        this.eventosFiltrados  = this.eventos
-      },
-      error: (error: any) => {
-        this.spinner.hide();
-        this.toastr.error('Erro ao carregar os eventos!', 'Erro!');
-      },
-      complete: () => this.spinner.hide()
-    });
-  }
-
-  public exibirImagem() : void {
-    this.mostrarImagem = !this.mostrarImagem;
-
-  }
-
-  public mostrarImagemTela(imagemURL: string): string {
-    return (imagemURL !== '')
-              ? `${environment.apiURL}resources/images/${imagemURL}`
-              : 'assets/img/semImagem.png'
+    }
 
 
-  }
+          public ngOnInit(): void {
+            this.pagination = {currentPage: 1, itemsPerPage:3, totalItems:10} as Pagination;
+            this.spinner.show();
+            this.carregarEventos();
+
+
+          }
+
+          public carregarEventos(): void {
+            this.eventoService.getEvento(this.pagination.currentPage,
+              this.pagination.itemsPerPage).subscribe(
+                (response: PaginatedResult<Evento[]>) =>  {
+                  this.eventos = response.result;
+                },
+                (error: any) => {
+                  this.spinner.hide();
+                  this.toastr.error('Erro ao carregar os eventos!', 'Erro!')
+                }).add(() => this.spinner.hide());
+              }
+
+              public exibirImagem() : void {
+                this.mostrarImagem = !this.mostrarImagem;
+
+              }
+
+              public mostrarImagemTela(imagemURL: string): string {
+                return (imagemURL !== '')
+                ? `${environment.apiURL}resources/images/${imagemURL}`
+                : 'assets/img/semImagem.png'
+
+
+              }
 
 
 
-  openModal(event: any, template: TemplateRef<any>, eventoId:number) : void {
-    event.stopPropagation();
-    this.eventoId = eventoId;
-    this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
-  }
+              openModal(event: any, template: TemplateRef<any>, eventoId:number) : void {
+                event.stopPropagation();
+                this.eventoId = eventoId;
+                this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
+              }
 
-  showSuccess() {
-    this.toastr.success('Evento deletado com sucesso!', 'Deletado!');
-  }
+              showSuccess() {
+                this.toastr.success('Evento deletado com sucesso!', 'Deletado!');
+              }
 
-  confirm(): void {
-    this.modalRef?.hide();
-    this.spinner.show();
+              public pageChanged(event):void {
+                this.pagination.currentPage = event.page;
+                this.carregarEventos();
+              }
 
-    this.eventoService.deleteEvento(this.eventoId).subscribe(
-      (result: any) => {
-        if (result.message === 'Deletado') {
-          this.showSuccess();
-          this.carregarEventos();
-        }
-      },
-      (error:any) => {
-        console.error(error);
-        this.toastr.error(`Falha ao excluir o Evento ${this.eventoId} `, 'Erro!');
-        this.spinner.hide();
-      },
+              confirm(): void {
+                this.modalRef?.hide();
+                this.spinner.show();
 
-    ).add(() => this.spinner.hide(),);
+                this.eventoService.deleteEvento(this.eventoId).subscribe(
+                  (result: any) => {
+                    if (result.message === 'Deletado') {
+                      this.showSuccess();
+                      this.carregarEventos();
+                    }
+                  },
+                  (error:any) => {
+                    console.error(error);
+                    this.toastr.error(`Falha ao excluir o Evento ${this.eventoId} `, 'Erro!');
+                    this.spinner.hide();
+                  },
 
-  }
+                  ).add(() => this.spinner.hide(),);
 
-  decline(): void {
-    this.modalRef?.hide();
-  }
+                }
 
-  detalheEvento(id: number): void {
-    this.router.navigate([`eventos/detalhe/${id}`]);
-  }
+                decline(): void {
+                  this.modalRef?.hide();
+                }
+
+                detalheEvento(id: number): void {
+                  this.router.navigate([`eventos/detalhe/${id}`]);
+                }
 
 
-}
+              }
